@@ -1,6 +1,6 @@
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
 
-const REGION_SUFFIX = /^(.*)@([a-z]{2}(?:-[a-z]+)+-\d+)$/i;
+const REGION_PREFIX = /^([a-z]{2}(?:-[a-z]+)+-\d+):(.*)$/i;
 
 let ssmClients;
 let ssmCache;
@@ -32,9 +32,9 @@ function replaceParams(str, params) {
 }
 
 function parseParameterAndRegion(ssmParameter) {
-  const match = ssmParameter.match(REGION_SUFFIX);
+  const match = ssmParameter.match(REGION_PREFIX);
   if (match) {
-    return { parameterName: match[1], region: match[2] };
+    return { parameterName: match[2], region: match[1] };
   }
   return { parameterName: ssmParameter, region: undefined };
 }

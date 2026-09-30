@@ -45,14 +45,14 @@ Transform:
       Region: us-east-1
 ```
 
-**Per-expression `@region`** — overrides Transform `Region` for that path only:
+**Per-expression region prefix** — overrides Transform `Region` for that path only:
 
 ```
-{{early-resolve:ssm:/${Environment}/infra/master-domain@us-east-1}}
-{{early-resolve-with-default:ssm:/${Environment}/infra/foo@us-east-1|fallback}}
+{{early-resolve:ssm:us-east-1:/${Environment}/infra/master-domain}}
+{{early-resolve-with-default:ssm:us-east-1:/${Environment}/infra/foo|fallback}}
 ```
 
-Precedence: `@region` > Transform `Region` > Lambda/stack region.
+Precedence: expression region > Transform `Region` > Lambda/stack region.
 
 Supported resolvers
 -------------------
@@ -61,7 +61,7 @@ There is only one supported resolver in here which resolves SSM (Parameter Store
 
 ```
 {{early-resolve:ssm:<path-to-param>}}
-{{early-resolve:ssm:<path-to-param>@<aws-region>}}
+{{early-resolve:ssm:<aws-region>:<path-to-param>}}
 ```
 
 Where `<path-to-param>` can mix strings and template parameter references, for example:
@@ -71,7 +71,7 @@ Where `<path-to-param>` can mix strings and template parameter references, for e
 ```
 
 The parameter replacement happens in this Macro, hence you do not need to `!Sub` it.
-Optional `@<aws-region>` selects a specific AWS region for that lookup (see Cross-region SSM lookups).
+An optional `<aws-region>:` prefix selects a specific AWS region for that lookup (see Cross-region SSM lookups).
 
 Default value fallback
 ----------------------

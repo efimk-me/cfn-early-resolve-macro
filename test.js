@@ -33,8 +33,8 @@ const baseTemplate = {
               "Value": "multi-key-2-{{early-resolve:ssm:/${Environment}/infra/hello}}"
             }
           ],
-          "RegionOverride": "{{early-resolve:ssm:/${Environment}/infra/master-domain@us-east-1}}",
-          "RegionOverrideWithDefault": "{{early-resolve-with-default:ssm:/${Environment}/infra/default-resolve@us-east-1|fallback}}"
+          "RegionOverride": "{{early-resolve:ssm:us-east-1:/${Environment}/infra/master-domain}}",
+          "RegionOverrideWithDefault": "{{early-resolve-with-default:ssm:us-east-1:/${Environment}/infra/default-resolve|fallback}}"
         }
       }
     }
@@ -63,13 +63,13 @@ async function run() {
     assert(props.RegionOverrideWithDefault === 'fallback', 'Failed to resolve default with region override');
   }
 
-  // Transform-level Region applies when expression has no @region
+  // Transform-level Region applies when expression has no region prefix
   {
     const withMacroRegion = JSON.parse(JSON.stringify(baseTemplate));
     withMacroRegion.params = { Region: 'us-east-1' };
     withMacroRegion.fragment.Resources.SampleResource.Properties = {
       FromMacro: "{{early-resolve:ssm:/${Environment}/infra/master-domain}}",
-      ExpressionWins: "{{early-resolve:ssm:/${Environment}/infra/master-domain@us-east-2}}"
+      ExpressionWins: "{{early-resolve:ssm:us-east-2:/${Environment}/infra/master-domain}}"
     };
     const result = await handler(withMacroRegion, {});
     const props = result.fragment.Resources.SampleResource.Properties;
